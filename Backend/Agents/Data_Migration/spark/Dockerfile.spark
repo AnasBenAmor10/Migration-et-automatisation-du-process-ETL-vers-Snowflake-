@@ -1,0 +1,15 @@
+FROM bitnami/spark:3.5.0
+
+USER root
+# Update the package list and install python3-pip, curl, telnet, and other utilities
+RUN apt-get update && \
+    apt-get install -y python3-pip curl telnet && \
+    pip3 install pandas numpy prompt_toolkit && \ 
+    rm -rf /var/lib/apt/lists/*
+
+COPY spark/ojdbc11.jar /opt/bitnami/spark/jars/
+COPY spark/snowflake-jdbc-3.23.2.jar /opt/bitnami/spark/jars/
+COPY spark/spark-snowflake_2.12-3.1.1.jar /opt/bitnami/spark/jars/
+RUN pip3 install langchain_google_genai
+
+USER 1001

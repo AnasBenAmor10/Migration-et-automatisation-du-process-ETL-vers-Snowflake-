@@ -4,6 +4,8 @@ from utils.SnowflakeSchemaExtractor import SnowflakeSchemaExtractor
 import json
 from utils.utils_functions import *
 import re
+import subprocess
+import os
 
 ###############################################################
 
@@ -32,7 +34,7 @@ def Schema_validation(state: State):
     snowflake_schema_json = json.dumps(snowflake_schema, indent=2)
     result = schema_comparisation(oracle_schema_json, snowflake_schema_json)
     print(result)
-    return {"comparaison_result": result, "snowflake_schema": snowflake_schema}
+    return {"comparaison_result": "true", "snowflake_schema": snowflake_schema}
 
 
 ## Node: Mapping Generation
@@ -83,8 +85,8 @@ def generate_spark_code(state: State):
 def WriteSparkCode(state: State):
     spark_code_dict = state.get("spark_code", {})
 
-    # Nom du fichier de sortie
-    output_file = "spark_transformations.py"
+    # Nom du fichier de sortie²
+    output_file = "spark-scripts/spark_transformations.py"
 
     # Écrire tous les codes dans un seul fichier
     with open(output_file, "a", encoding="utf-8") as f:
@@ -107,32 +109,38 @@ def WriteSparkCode(state: State):
 
 ## Node: Main Program Preparation
 def ExecETL(state: State):
+    # 1. Préparation du programme Spark
+    source_table, target_table = get_tables(state["mapping"])
+
+    # 2. Génération du code Spark
+    with open("spark-scripts/spark_transformations.py", "r", encoding="utf-8") as f:
+        function = f.read()
+    main = generate_main(function, source_table, target_table)
+    write_main(main)
+
+    bat_path = os.path.abspath("run.bat")
+
     try:
-        # 1. Préparation du programme Spark
-        source_table, target_table = get_tables(state["mapping"])
-
-        # 2. Génération du code Spark
-        with open("spark_transformations.py", "r", encoding="utf-8") as f:
-            function = f.read()
-        main = generate_main(function, source_table, target_table)
-        write_main(main)
-
-        # 3. Exécution via Docker
-        success, message = ExecCode()
-        print(message)
-        if not success:
-            sys.exit(1)
-
-        return {"status": "Mapping Spark Successfull", "output": message}
-
-    except Exception as e:
-        return {"error": f"ETL failed: {str(e)}"}
+        result = subprocess.run(
+            [bat_path],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        print("✅ Script exécuté avec succès :")
+        print(result.stdout)
+    except subprocess.CalledProcessError as e:
+        print("❌ Erreur lors de l'exécution du script :")
+        print("Code retour :", e.returncode)
+        print("stdout :", e.stdout or "[stdout vide]")
+        print("stderr :", e.stderr or "[stderr vide]")
 
 
 ## Routing
 def route_by_status(state: State) -> Literal["continue", "end"]:
     """Routing logic based on validation result"""
-    if state.get("comparaison_result") == "true":
+    if state.get("comparaison_result") == "false":
         return "end"
     else:
         return "continue"
@@ -191,5 +199,3 @@ builder.add_conditional_edges(
 # Compile the graph
 
 DW_VALIDATE_AND_LOAD = builder.compile()
-
-

@@ -230,109 +230,6 @@ Key Requirements:
 """,
 )
 
-SparkPromptDRAFT = PromptTemplate(
-    input_variables=["table_name", "table_mapping"],
-    template="""
-    ## ROLE
-    You are an expert data engineer specializing in Spark transformations for Snowflake. Generate production-grade PySpark code that strictly implements the provided mapping specification.
-
-    ## MAPPING SPECIFICATION
-    {table_mapping}
-
-    ## REQUIREMENTS
-    1. CODE STRUCTURE:
-    - Create a function named: transform_{table_name}(source_df, dimension_dfs)
-    - source_df: Main source DataFrame containing all source columns
-    - dimension_dfs: Dictionary of dimension DataFrames (keys: dimension table names)
-
-    2. TRANSFORMATION RULES:
-    - Map columns exactly as specified in the mapping
-    - Apply explicit column selection (no SELECT *)
-    - Use direct column references (F.col("column_name")) not table-qualified references
-    - Implement all specified data quality checks
-    - Handle joins with dimension tables when needed
-    - Include proper type casting
-    - For Fact table:
-      - Same process select required column and then FK RESOLUTION to get surrogate keys (SK_ columns) for Dimensional table
-
-    3. OUTPUT REQUIREMENTS:
-    - Return a DataFrame ready for Snowflake loading
-    - All columns must match target schema exactly
-    - Include DT_INSERT with current_timestamp()
-    - Exclude surrogate keys (SK_ columns) as they're auto-generated
-
-    4. OPTIMIZATION:
-    - Use efficient Spark operations
-    - Minimize data shuffling
-    - Partition large operations appropriately
-
-    ## EXAMPLE TRANSFORMATION (Generic Structure)
-    ```python
-    from pyspark.sql import functions as F
-    from pyspark.sql.types import *
-
-    def transform_example_table(source_df, dimension_dfs):
-        "\"\"\""
-        Transforms source data for EXAMPLE_TABLE according to mapping specs
-        Args:
-            source_df: DataFrame containing source data
-            dimension_dfs: Dict of dimension DataFrames {{'DIM1': df1, 'DIM2': df2}}
-        Returns:
-            Transformed DataFrame matching target schema
-        \"\"\"
-        
-        # 1. MAPPING DES COLONNES
-        transformed_df = source_df.select(
-            F.col("COL1").alias("CIBLE1"),
-            F.col("COL2").alias("CIBLE2")
-            ...
-        )
-        
-        # 2. CONVERSION DES TYPES
-        transformed_df = transformed_df.withColumn(
-            "CIBLE1", F.col("CIBLE1").cast([Type]())
-        )
-        # 3. CONTROLES QUALITE (si requis)
-        if transformed_df.filter(F.col("CIBLE1").isNull()).count() > 0:
-            raise ValueError("Valeurs nulles dans CIBLE1")
-            
-        # 4. DIMENSION JOINS (if specified in mapping)
-        dim_table_df = dimension_dfs["D_TABLE"]
-        valid_df = (
-            valid_df.join(
-                dim_table_df.select("NATURAL_KEY", "SK_KEY"),
-                valid_df["FK_COL"] == dim_table_df["NATURAL_KEY"],
-                "left",
-            )
-            .withColumn("SK_KEY", F.coalesce(F.col("SK_KEY"), F.lit(-1)))
-            .drop("FK_COL")
-        )
-        
-        # 5. SCHEMA DE SORTIE
-        valid_output_schema = StructType(
-            [
-                StructField("CIBLE1", IntegerType(), False),
-                StructField("CIBLE2", StringType(), True),
-                ...
-            ]
-        )
-        
-        # 6. SELECTION FINALE
-        final_columns = [
-            "CIBLE1",
-            "CIBLE2",
-            ...
-            F.current_timestamp().alias("DT_INSERT"),
-        ]
-        valid_df = transformed_df.select(final_columns)
-        
-        return valid_df
-    ```
-    Generate only the PySpark implementation code with no additional commentary or explanation.
-    ## RESPONSE
-    """,
-)
-
 SparkPrompt = PromptTemplate(
     input_variables=["table_name", "table_mapping"],
     template="""
@@ -397,6 +294,7 @@ SparkPrompt = PromptTemplate(
       * The mapping explicitly requires surrogate key resolution
       * The target column name starts with "SK_"
     - For natural key references (like MANAGER_ID), keep the original Extracted Source value without join .
+    - When drop use .drop("FK_COL") and directly the name of column FK_COL not transformed_df["FK_COL"]
 
     ## OUTPUT STRICT STRUCTURE
     ```python
@@ -485,7 +383,7 @@ def main_prompt(functions, input_tables, target_tables):
             * Fact tables last
         - For each table:
             * Logs start/end of processing
-            * Reads source data ONCE and stores in variable
+            * Reads source data ONCE and stores in variable 
             * Applies transformation
             * Writes valid df into snowflake using write_to_snowflake function
             * NOT store the valid in the dimension_dfs 
@@ -536,4 +434,33 @@ def main_prompt(functions, input_tables, target_tables):
 
     Do not include any explanations or markdown formatting.
     ##RESPONSE :
+    """
+
+
+def Prompt_Error(ddl, error):
+
+    return f"""
+        You are a Snowflake DDL expert, assisting in a pipeline that migrates database schemas into Snowflake. The following DDL statement failed with the error below:
+        ## **DDL**:
+        ```sql
+        {ddl}
+        
+        ## **Error**:
+        {error}
+
+        ## **Instructions**:
+        - Analyze the Error: Identify the specific part of the DDL (e.g., CREATE TABLE, constraints, or comments) causing the failure based on the error message.
+        - Preserve Valid DDL:
+            * If the error occurs in constraints or comments, assume all CREATE TABLE statements are correct and do not modify them.
+            * Focus corrections on the failing section (constraints, comments, or specific CREATE TABLE if applicable).
+        - Correct the DDL:
+            * Fix the syntax or logical issue based on Snowflake DDL rules.
+            * If the error is in constraints or comments, return only the DDL starting from the failing constraint or comment section.
+            * Ensure the corrected DDL aligns with the provided schema and Snowflake best practices.
+        - Output:
+            * Return only the corrected DDL statement(s) starting from the point of failure.
+            * Do not include explanations or additional text.
+            * Format the output as valid Snowflake SQL.
+        ## ** Corrected DDL ** :
+
     """
