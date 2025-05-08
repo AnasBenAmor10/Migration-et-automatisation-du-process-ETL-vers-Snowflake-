@@ -1,0 +1,1482 @@
+{
+  "schema_name": "HR",
+  "extraction_date": "2025-05-08T14:29:25.367953",
+  "tables": {
+    "COUNTRIES": {
+      "tablespace": null,
+      "columns": [
+        {
+          "name": "COUNTRY_ID",
+          "type": "CHAR",
+          "length": 2,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 2,
+          "char_used": "B",
+          "comments": "Primary key of countries table."
+        },
+        {
+          "name": "COUNTRY_NAME",
+          "type": "VARCHAR2",
+          "length": 40,
+          "precision": null,
+          "scale": null,
+          "nullable": true,
+          "default": null,
+          "char_length": 40,
+          "char_used": "B",
+          "comments": "Country name"
+        },
+        {
+          "name": "REGION_ID",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": null,
+          "scale": null,
+          "nullable": true,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "Region ID for the country. Foreign key to region_id column in the departments table."
+        }
+      ],
+      "num_rows": 25,
+      "avg_row_len": 15,
+      "blocks": null,
+      "last_analyzed": "2025-03-21 22:05:04",
+      "primary_key": {
+        "constraint_name": "COUNTRY_C_ID_PK",
+        "columns": [
+          "COUNTRY_ID"
+        ]
+      },
+      "foreign_keys": [
+        {
+          "constraint_name": "COUNTR_REG_FK",
+          "referenced_schema": "HR",
+          "referenced_table": "REGIONS",
+          "referenced_constraint": "REG_ID_PK",
+          "columns": [
+            "REGION_ID"
+          ],
+          "referenced_columns": [
+            "REGION_ID"
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "unique": true,
+          "type": "IOT - TOP",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "COUNTRY_ID",
+              "order": "ASC"
+            }
+          ]
+        }
+      ],
+      "comments": "country table. Contains 25 rows. References with locations table."
+    },
+    "DEPARTMENTS": {
+      "tablespace": "EXAMPLE",
+      "columns": [
+        {
+          "name": "DEPARTMENT_ID",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 4,
+          "scale": 0,
+          "nullable": false,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "Primary key column of departments table."
+        },
+        {
+          "name": "DEPARTMENT_NAME",
+          "type": "VARCHAR2",
+          "length": 30,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 30,
+          "char_used": "B",
+          "comments": "A not null column that shows name of a department. Administration,\nMarketing, Purchasing, Human Resources, Shipping, IT, Executive, Public\nRelations, Sales, Finance, and Accounting. "
+        },
+        {
+          "name": "MANAGER_ID",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 6,
+          "scale": 0,
+          "nullable": true,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "Manager_id of a department. Foreign key to employee_id column of employees table. The manager_id column of the employee table references this column."
+        },
+        {
+          "name": "LOCATION_ID",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 4,
+          "scale": 0,
+          "nullable": true,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "Location id where a department is located. Foreign key to location_id column of locations table."
+        }
+      ],
+      "num_rows": 27,
+      "avg_row_len": 21,
+      "blocks": 5,
+      "last_analyzed": "2025-03-21 22:05:04",
+      "primary_key": {
+        "constraint_name": "DEPT_ID_PK",
+        "columns": [
+          "DEPARTMENT_ID"
+        ]
+      },
+      "foreign_keys": [
+        {
+          "constraint_name": "DEPT_LOC_FK",
+          "referenced_schema": "HR",
+          "referenced_table": "LOCATIONS",
+          "referenced_constraint": "LOC_ID_PK",
+          "columns": [
+            "LOCATION_ID"
+          ],
+          "referenced_columns": [
+            "LOCATION_ID"
+          ]
+        },
+        {
+          "constraint_name": "DEPT_MGR_FK",
+          "referenced_schema": "HR",
+          "referenced_table": "EMPLOYEES",
+          "referenced_constraint": "EMP_EMP_ID_PK",
+          "columns": [
+            "MANAGER_ID"
+          ],
+          "referenced_columns": [
+            "EMPLOYEE_ID"
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "unique": true,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "DEPARTMENT_ID",
+              "order": "ASC"
+            }
+          ]
+        },
+        {
+          "unique": false,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "LOCATION_ID",
+              "order": "ASC"
+            }
+          ]
+        }
+      ],
+      "comments": "Departments table that shows details of departments where employees\nwork. Contains 27 rows; references with locations, employees, and job_history tables."
+    },
+    "EMPLOYEES": {
+      "tablespace": "EXAMPLE",
+      "columns": [
+        {
+          "name": "EMPLOYEE_ID",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 6,
+          "scale": 0,
+          "nullable": false,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "Primary key of employees table."
+        },
+        {
+          "name": "FIRST_NAME",
+          "type": "VARCHAR2",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "nullable": true,
+          "default": null,
+          "char_length": 20,
+          "char_used": "B",
+          "comments": "First name of the employee. A not null column."
+        },
+        {
+          "name": "LAST_NAME",
+          "type": "VARCHAR2",
+          "length": 25,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 25,
+          "char_used": "B",
+          "comments": "Last name of the employee. A not null column."
+        },
+        {
+          "name": "EMAIL",
+          "type": "VARCHAR2",
+          "length": 25,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 25,
+          "char_used": "B",
+          "comments": "Email id of the employee"
+        },
+        {
+          "name": "PHONE_NUMBER",
+          "type": "VARCHAR2",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "nullable": true,
+          "default": null,
+          "char_length": 20,
+          "char_used": "B",
+          "comments": "Phone number of the employee; includes country code and area code"
+        },
+        {
+          "name": "HIRE_DATE",
+          "type": "DATE",
+          "length": 7,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "Date when the employee started on this job. A not null column."
+        },
+        {
+          "name": "JOB_ID",
+          "type": "VARCHAR2",
+          "length": 10,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 10,
+          "char_used": "B",
+          "comments": "Current job of the employee; foreign key to job_id column of the\njobs table. A not null column."
+        },
+        {
+          "name": "SALARY",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 8,
+          "scale": 2,
+          "nullable": true,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "Monthly salary of the employee. Must be greater\nthan zero (enforced by constraint emp_salary_min)"
+        },
+        {
+          "name": "COMMISSION_PCT",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 2,
+          "scale": 2,
+          "nullable": true,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "Commission percentage of the employee; Only employees in sales\ndepartment elgible for commission percentage"
+        },
+        {
+          "name": "MANAGER_ID",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 6,
+          "scale": 0,
+          "nullable": true,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "Manager id of the employee; has same domain as manager_id in\ndepartments table. Foreign key to employee_id column of employees table.\n(useful for reflexive joins and CONNECT BY query)"
+        },
+        {
+          "name": "DEPARTMENT_ID",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 4,
+          "scale": 0,
+          "nullable": true,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "Department id where employee works; foreign key to department_id\ncolumn of the departments table"
+        }
+      ],
+      "num_rows": 107,
+      "avg_row_len": 69,
+      "blocks": 5,
+      "last_analyzed": "2025-03-21 22:05:04",
+      "primary_key": {
+        "constraint_name": "EMP_EMP_ID_PK",
+        "columns": [
+          "EMPLOYEE_ID"
+        ]
+      },
+      "foreign_keys": [
+        {
+          "constraint_name": "EMP_DEPT_FK",
+          "referenced_schema": "HR",
+          "referenced_table": "DEPARTMENTS",
+          "referenced_constraint": "DEPT_ID_PK",
+          "columns": [
+            "DEPARTMENT_ID"
+          ],
+          "referenced_columns": [
+            "DEPARTMENT_ID"
+          ]
+        },
+        {
+          "constraint_name": "EMP_JOB_FK",
+          "referenced_schema": "HR",
+          "referenced_table": "JOBS",
+          "referenced_constraint": "JOB_ID_PK",
+          "columns": [
+            "JOB_ID"
+          ],
+          "referenced_columns": [
+            "JOB_ID"
+          ]
+        },
+        {
+          "constraint_name": "EMP_MANAGER_FK",
+          "referenced_schema": "HR",
+          "referenced_table": "EMPLOYEES",
+          "referenced_constraint": "EMP_EMP_ID_PK",
+          "columns": [
+            "MANAGER_ID"
+          ],
+          "referenced_columns": [
+            "EMPLOYEE_ID"
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "unique": false,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "DEPARTMENT_ID",
+              "order": "ASC"
+            }
+          ]
+        },
+        {
+          "unique": true,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "EMAIL",
+              "order": "ASC"
+            }
+          ]
+        },
+        {
+          "unique": true,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "EMPLOYEE_ID",
+              "order": "ASC"
+            }
+          ]
+        },
+        {
+          "unique": false,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "JOB_ID",
+              "order": "ASC"
+            }
+          ]
+        },
+        {
+          "unique": false,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "MANAGER_ID",
+              "order": "ASC"
+            }
+          ]
+        },
+        {
+          "unique": false,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "LAST_NAME",
+              "order": "ASC"
+            },
+            {
+              "name": "FIRST_NAME",
+              "order": "ASC"
+            }
+          ]
+        }
+      ],
+      "comments": "employees table. Contains 107 rows. References with departments,\njobs, job_history tables. Contains a self reference."
+    },
+    "EMPLOYEES_TGT": {
+      "tablespace": "EXAMPLE",
+      "columns": [
+        {
+          "name": "EMPLOYEE_ID",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 6,
+          "scale": 0,
+          "nullable": false,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": null
+        },
+        {
+          "name": "FIRST_NAME",
+          "type": "VARCHAR2",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "nullable": true,
+          "default": null,
+          "char_length": 20,
+          "char_used": "B",
+          "comments": null
+        },
+        {
+          "name": "LAST_NAME",
+          "type": "VARCHAR2",
+          "length": 25,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 25,
+          "char_used": "B",
+          "comments": null
+        },
+        {
+          "name": "EMAIL",
+          "type": "VARCHAR2",
+          "length": 25,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 25,
+          "char_used": "B",
+          "comments": null
+        },
+        {
+          "name": "PHONE_NUMBER",
+          "type": "VARCHAR2",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "nullable": true,
+          "default": null,
+          "char_length": 20,
+          "char_used": "B",
+          "comments": null
+        },
+        {
+          "name": "HIRE_DATE",
+          "type": "DATE",
+          "length": 7,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": null
+        },
+        {
+          "name": "JOB_ID",
+          "type": "VARCHAR2",
+          "length": 10,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 10,
+          "char_used": "B",
+          "comments": null
+        },
+        {
+          "name": "SALARY",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 8,
+          "scale": 2,
+          "nullable": true,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": null
+        },
+        {
+          "name": "COMMISSION_PCT",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 2,
+          "scale": 2,
+          "nullable": true,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": null
+        },
+        {
+          "name": "MANAGER_ID",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 6,
+          "scale": 0,
+          "nullable": true,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": null
+        },
+        {
+          "name": "DEPARTMENT_ID",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 4,
+          "scale": 0,
+          "nullable": true,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": null
+        }
+      ],
+      "num_rows": 0,
+      "avg_row_len": 0,
+      "blocks": 0,
+      "last_analyzed": "2025-03-21 22:05:02",
+      "primary_key": {
+        "constraint_name": "SYS_C0011116",
+        "columns": [
+          "EMPLOYEE_ID"
+        ]
+      },
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "unique": true,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "EMPLOYEE_ID",
+              "order": "ASC"
+            }
+          ]
+        }
+      ],
+      "comments": null
+    },
+    "JOBS": {
+      "tablespace": "EXAMPLE",
+      "columns": [
+        {
+          "name": "JOB_ID",
+          "type": "VARCHAR2",
+          "length": 10,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 10,
+          "char_used": "B",
+          "comments": "Primary key of jobs table."
+        },
+        {
+          "name": "JOB_TITLE",
+          "type": "VARCHAR2",
+          "length": 35,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 35,
+          "char_used": "B",
+          "comments": "A not null column that shows job title, e.g. AD_VP, FI_ACCOUNTANT"
+        },
+        {
+          "name": "MIN_SALARY",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 6,
+          "scale": 0,
+          "nullable": true,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "Minimum salary for a job title."
+        },
+        {
+          "name": "MAX_SALARY",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 6,
+          "scale": 0,
+          "nullable": true,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "Maximum salary for a job title"
+        }
+      ],
+      "num_rows": 19,
+      "avg_row_len": 33,
+      "blocks": 5,
+      "last_analyzed": "2025-03-21 22:05:04",
+      "primary_key": {
+        "constraint_name": "JOB_ID_PK",
+        "columns": [
+          "JOB_ID"
+        ]
+      },
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "unique": true,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "JOB_ID",
+              "order": "ASC"
+            }
+          ]
+        }
+      ],
+      "comments": "jobs table with job titles and salary ranges. Contains 19 rows.\nReferences with employees and job_history table."
+    },
+    "JOB_HISTORY": {
+      "tablespace": "EXAMPLE",
+      "columns": [
+        {
+          "name": "EMPLOYEE_ID",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 6,
+          "scale": 0,
+          "nullable": false,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "A not null column in the complex primary key employee_id+start_date.\nForeign key to employee_id column of the employee table"
+        },
+        {
+          "name": "START_DATE",
+          "type": "DATE",
+          "length": 7,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "A not null column in the complex primary key employee_id+start_date.\nMust be less than the end_date of the job_history table. (enforced by\nconstraint jhist_date_interval)"
+        },
+        {
+          "name": "END_DATE",
+          "type": "DATE",
+          "length": 7,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "Last day of the employee in this job role. A not null column. Must be\ngreater than the start_date of the job_history table.\n(enforced by constraint jhist_date_interval)"
+        },
+        {
+          "name": "JOB_ID",
+          "type": "VARCHAR2",
+          "length": 10,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 10,
+          "char_used": "B",
+          "comments": "Job role in which the employee worked in the past; foreign key to\njob_id column in the jobs table. A not null column."
+        },
+        {
+          "name": "DEPARTMENT_ID",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 4,
+          "scale": 0,
+          "nullable": true,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "Department id in which the employee worked in the past; foreign key to deparment_id column in the departments table"
+        }
+      ],
+      "num_rows": 10,
+      "avg_row_len": 31,
+      "blocks": 5,
+      "last_analyzed": "2025-03-21 22:05:05",
+      "primary_key": {
+        "constraint_name": "JHIST_EMP_ID_ST_DATE_PK",
+        "columns": [
+          "EMPLOYEE_ID",
+          "START_DATE"
+        ]
+      },
+      "foreign_keys": [
+        {
+          "constraint_name": "JHIST_DEPT_FK",
+          "referenced_schema": "HR",
+          "referenced_table": "DEPARTMENTS",
+          "referenced_constraint": "DEPT_ID_PK",
+          "columns": [
+            "DEPARTMENT_ID"
+          ],
+          "referenced_columns": [
+            "DEPARTMENT_ID"
+          ]
+        },
+        {
+          "constraint_name": "JHIST_EMP_FK",
+          "referenced_schema": "HR",
+          "referenced_table": "EMPLOYEES",
+          "referenced_constraint": "EMP_EMP_ID_PK",
+          "columns": [
+            "EMPLOYEE_ID"
+          ],
+          "referenced_columns": [
+            "EMPLOYEE_ID"
+          ]
+        },
+        {
+          "constraint_name": "JHIST_JOB_FK",
+          "referenced_schema": "HR",
+          "referenced_table": "JOBS",
+          "referenced_constraint": "JOB_ID_PK",
+          "columns": [
+            "JOB_ID"
+          ],
+          "referenced_columns": [
+            "JOB_ID"
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "unique": false,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "DEPARTMENT_ID",
+              "order": "ASC"
+            }
+          ]
+        },
+        {
+          "unique": false,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "EMPLOYEE_ID",
+              "order": "ASC"
+            }
+          ]
+        },
+        {
+          "unique": true,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "EMPLOYEE_ID",
+              "order": "ASC"
+            },
+            {
+              "name": "START_DATE",
+              "order": "ASC"
+            }
+          ]
+        },
+        {
+          "unique": false,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "JOB_ID",
+              "order": "ASC"
+            }
+          ]
+        }
+      ],
+      "comments": "Table that stores job history of the employees. If an employee\nchanges departments within the job or changes jobs within the department,\nnew rows get inserted into this table with old job information of the\nemployee. Contains a complex primary key: employee_id+start_date.\nContains 25 rows. References with jobs, employees, and departments tables."
+    },
+    "LOCATIONS": {
+      "tablespace": "EXAMPLE",
+      "columns": [
+        {
+          "name": "LOCATION_ID",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": 4,
+          "scale": 0,
+          "nullable": false,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": "Primary key of locations table"
+        },
+        {
+          "name": "STREET_ADDRESS",
+          "type": "VARCHAR2",
+          "length": 40,
+          "precision": null,
+          "scale": null,
+          "nullable": true,
+          "default": null,
+          "char_length": 40,
+          "char_used": "B",
+          "comments": "Street address of an office, warehouse, or production site of a company.\nContains building number and street name"
+        },
+        {
+          "name": "POSTAL_CODE",
+          "type": "VARCHAR2",
+          "length": 12,
+          "precision": null,
+          "scale": null,
+          "nullable": true,
+          "default": null,
+          "char_length": 12,
+          "char_used": "B",
+          "comments": "Postal code of the location of an office, warehouse, or production site\nof a company. "
+        },
+        {
+          "name": "CITY",
+          "type": "VARCHAR2",
+          "length": 30,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 30,
+          "char_used": "B",
+          "comments": "A not null column that shows city where an office, warehouse, or\nproduction site of a company is located. "
+        },
+        {
+          "name": "STATE_PROVINCE",
+          "type": "VARCHAR2",
+          "length": 25,
+          "precision": null,
+          "scale": null,
+          "nullable": true,
+          "default": null,
+          "char_length": 25,
+          "char_used": "B",
+          "comments": "State or Province where an office, warehouse, or production site of a\ncompany is located."
+        },
+        {
+          "name": "COUNTRY_ID",
+          "type": "CHAR",
+          "length": 2,
+          "precision": null,
+          "scale": null,
+          "nullable": true,
+          "default": null,
+          "char_length": 2,
+          "char_used": "B",
+          "comments": "Country where an office, warehouse, or production site of a company is\nlocated. Foreign key to country_id column of the countries table."
+        }
+      ],
+      "num_rows": 23,
+      "avg_row_len": 49,
+      "blocks": 5,
+      "last_analyzed": "2025-03-21 22:05:04",
+      "primary_key": {
+        "constraint_name": "LOC_ID_PK",
+        "columns": [
+          "LOCATION_ID"
+        ]
+      },
+      "foreign_keys": [
+        {
+          "constraint_name": "LOC_C_ID_FK",
+          "referenced_schema": "HR",
+          "referenced_table": "COUNTRIES",
+          "referenced_constraint": "COUNTRY_C_ID_PK",
+          "columns": [
+            "COUNTRY_ID"
+          ],
+          "referenced_columns": [
+            "COUNTRY_ID"
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "unique": false,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "CITY",
+              "order": "ASC"
+            }
+          ]
+        },
+        {
+          "unique": false,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "COUNTRY_ID",
+              "order": "ASC"
+            }
+          ]
+        },
+        {
+          "unique": true,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "LOCATION_ID",
+              "order": "ASC"
+            }
+          ]
+        },
+        {
+          "unique": false,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "STATE_PROVINCE",
+              "order": "ASC"
+            }
+          ]
+        }
+      ],
+      "comments": "Locations table that contains specific address of a specific office,\nwarehouse, and/or production site of a company. Does not store addresses /\nlocations of customers. Contains 23 rows; references with the\ndepartments and countries tables. "
+    },
+    "REGIONS": {
+      "tablespace": "EXAMPLE",
+      "columns": [
+        {
+          "name": "REGION_ID",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": null,
+          "scale": null,
+          "nullable": false,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": null
+        },
+        {
+          "name": "REGION_NAME",
+          "type": "VARCHAR2",
+          "length": 25,
+          "precision": null,
+          "scale": null,
+          "nullable": true,
+          "default": null,
+          "char_length": 25,
+          "char_used": "B",
+          "comments": null
+        }
+      ],
+      "num_rows": 4,
+      "avg_row_len": 14,
+      "blocks": 5,
+      "last_analyzed": "2025-03-21 22:05:03",
+      "primary_key": {
+        "constraint_name": "REG_ID_PK",
+        "columns": [
+          "REGION_ID"
+        ]
+      },
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "unique": true,
+          "type": "NORMAL",
+          "partitioned": false,
+          "columns": [
+            {
+              "name": "REGION_ID",
+              "order": "ASC"
+            }
+          ]
+        }
+      ],
+      "comments": null
+    },
+    "TRG_COUNTRIES": {
+      "tablespace": "EXAMPLE",
+      "columns": [
+        {
+          "name": "COUNTRY_ID",
+          "type": "CHAR",
+          "length": 2,
+          "precision": null,
+          "scale": null,
+          "nullable": true,
+          "default": null,
+          "char_length": 2,
+          "char_used": "B",
+          "comments": null
+        },
+        {
+          "name": "COUNTRY_NAME",
+          "type": "VARCHAR2",
+          "length": 40,
+          "precision": null,
+          "scale": null,
+          "nullable": true,
+          "default": null,
+          "char_length": 40,
+          "char_used": "B",
+          "comments": null
+        },
+        {
+          "name": "REGION_ID",
+          "type": "NUMBER",
+          "length": 22,
+          "precision": null,
+          "scale": null,
+          "nullable": true,
+          "default": null,
+          "char_length": 0,
+          "char_used": null,
+          "comments": null
+        }
+      ],
+      "num_rows": 0,
+      "avg_row_len": 0,
+      "blocks": 0,
+      "last_analyzed": "2025-03-21 22:05:02",
+      "primary_key": null,
+      "foreign_keys": [],
+      "indexes": [],
+      "comments": null
+    }
+  },
+  "indexes": {
+    "COUNTRIES": {
+      "COUNTRY_C_ID_PK": {
+        "unique": true,
+        "type": "IOT - TOP",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "COUNTRY_ID",
+            "order": "ASC"
+          }
+        ]
+      }
+    },
+    "DEPARTMENTS": {
+      "DEPT_ID_PK": {
+        "unique": true,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "DEPARTMENT_ID",
+            "order": "ASC"
+          }
+        ]
+      },
+      "DEPT_LOCATION_IX": {
+        "unique": false,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "LOCATION_ID",
+            "order": "ASC"
+          }
+        ]
+      }
+    },
+    "EMPLOYEES": {
+      "EMP_DEPARTMENT_IX": {
+        "unique": false,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "DEPARTMENT_ID",
+            "order": "ASC"
+          }
+        ]
+      },
+      "EMP_EMAIL_UK": {
+        "unique": true,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "EMAIL",
+            "order": "ASC"
+          }
+        ]
+      },
+      "EMP_EMP_ID_PK": {
+        "unique": true,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "EMPLOYEE_ID",
+            "order": "ASC"
+          }
+        ]
+      },
+      "EMP_JOB_IX": {
+        "unique": false,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "JOB_ID",
+            "order": "ASC"
+          }
+        ]
+      },
+      "EMP_MANAGER_IX": {
+        "unique": false,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "MANAGER_ID",
+            "order": "ASC"
+          }
+        ]
+      },
+      "EMP_NAME_IX": {
+        "unique": false,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "LAST_NAME",
+            "order": "ASC"
+          },
+          {
+            "name": "FIRST_NAME",
+            "order": "ASC"
+          }
+        ]
+      }
+    },
+    "EMPLOYEES_TGT": {
+      "SYS_C0011116": {
+        "unique": true,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "EMPLOYEE_ID",
+            "order": "ASC"
+          }
+        ]
+      }
+    },
+    "JOBS": {
+      "JOB_ID_PK": {
+        "unique": true,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "JOB_ID",
+            "order": "ASC"
+          }
+        ]
+      }
+    },
+    "JOB_HISTORY": {
+      "JHIST_DEPARTMENT_IX": {
+        "unique": false,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "DEPARTMENT_ID",
+            "order": "ASC"
+          }
+        ]
+      },
+      "JHIST_EMPLOYEE_IX": {
+        "unique": false,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "EMPLOYEE_ID",
+            "order": "ASC"
+          }
+        ]
+      },
+      "JHIST_EMP_ID_ST_DATE_PK": {
+        "unique": true,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "EMPLOYEE_ID",
+            "order": "ASC"
+          },
+          {
+            "name": "START_DATE",
+            "order": "ASC"
+          }
+        ]
+      },
+      "JHIST_JOB_IX": {
+        "unique": false,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "JOB_ID",
+            "order": "ASC"
+          }
+        ]
+      }
+    },
+    "LOCATIONS": {
+      "LOC_CITY_IX": {
+        "unique": false,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "CITY",
+            "order": "ASC"
+          }
+        ]
+      },
+      "LOC_COUNTRY_IX": {
+        "unique": false,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "COUNTRY_ID",
+            "order": "ASC"
+          }
+        ]
+      },
+      "LOC_ID_PK": {
+        "unique": true,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "LOCATION_ID",
+            "order": "ASC"
+          }
+        ]
+      },
+      "LOC_STATE_PROVINCE_IX": {
+        "unique": false,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "STATE_PROVINCE",
+            "order": "ASC"
+          }
+        ]
+      }
+    },
+    "REGIONS": {
+      "REG_ID_PK": {
+        "unique": true,
+        "type": "NORMAL",
+        "partitioned": false,
+        "columns": [
+          {
+            "name": "REGION_ID",
+            "order": "ASC"
+          }
+        ]
+      }
+    }
+  },
+  "triggers": {
+    "EMPLOYEES": [
+      {
+        "name": "SECURE_EMPLOYEES",
+        "type": "BEFORE STATEMENT",
+        "event": "INSERT OR UPDATE OR DELETE",
+        "status": "DISABLED",
+        "body": "BEGIN\n  secure_dml;\nEND secure_employees;\n\n"
+      }
+    ]
+  },
+  "relationships": [
+    {
+      "source_table": "COUNTRIES",
+      "fk_name": "COUNTR_REG_FK",
+      "target_table": "REGIONS",
+      "fk_columns": [
+        "REGION_ID"
+      ],
+      "pk_columns": [
+        "REGION_ID"
+      ]
+    },
+    {
+      "source_table": "DEPARTMENTS",
+      "fk_name": "DEPT_LOC_FK",
+      "target_table": "LOCATIONS",
+      "fk_columns": [
+        "LOCATION_ID"
+      ],
+      "pk_columns": [
+        "LOCATION_ID"
+      ]
+    },
+    {
+      "source_table": "DEPARTMENTS",
+      "fk_name": "DEPT_MGR_FK",
+      "target_table": "EMPLOYEES",
+      "fk_columns": [
+        "MANAGER_ID"
+      ],
+      "pk_columns": [
+        "EMPLOYEE_ID"
+      ]
+    },
+    {
+      "source_table": "EMPLOYEES",
+      "fk_name": "EMP_DEPT_FK",
+      "target_table": "DEPARTMENTS",
+      "fk_columns": [
+        "DEPARTMENT_ID"
+      ],
+      "pk_columns": [
+        "DEPARTMENT_ID"
+      ]
+    },
+    {
+      "source_table": "EMPLOYEES",
+      "fk_name": "EMP_JOB_FK",
+      "target_table": "JOBS",
+      "fk_columns": [
+        "JOB_ID"
+      ],
+      "pk_columns": [
+        "JOB_ID"
+      ]
+    },
+    {
+      "source_table": "EMPLOYEES",
+      "fk_name": "EMP_MANAGER_FK",
+      "target_table": "EMPLOYEES",
+      "fk_columns": [
+        "MANAGER_ID"
+      ],
+      "pk_columns": [
+        "EMPLOYEE_ID"
+      ]
+    },
+    {
+      "source_table": "JOB_HISTORY",
+      "fk_name": "JHIST_DEPT_FK",
+      "target_table": "DEPARTMENTS",
+      "fk_columns": [
+        "DEPARTMENT_ID"
+      ],
+      "pk_columns": [
+        "DEPARTMENT_ID"
+      ]
+    },
+    {
+      "source_table": "JOB_HISTORY",
+      "fk_name": "JHIST_EMP_FK",
+      "target_table": "EMPLOYEES",
+      "fk_columns": [
+        "EMPLOYEE_ID"
+      ],
+      "pk_columns": [
+        "EMPLOYEE_ID"
+      ]
+    },
+    {
+      "source_table": "JOB_HISTORY",
+      "fk_name": "JHIST_JOB_FK",
+      "target_table": "JOBS",
+      "fk_columns": [
+        "JOB_ID"
+      ],
+      "pk_columns": [
+        "JOB_ID"
+      ]
+    },
+    {
+      "source_table": "LOCATIONS",
+      "fk_name": "LOC_C_ID_FK",
+      "target_table": "COUNTRIES",
+      "fk_columns": [
+        "COUNTRY_ID"
+      ],
+      "pk_columns": [
+        "COUNTRY_ID"
+      ]
+    }
+  ]
+}
