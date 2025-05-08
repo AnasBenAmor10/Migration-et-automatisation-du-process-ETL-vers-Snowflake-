@@ -5,7 +5,9 @@ from DDLCreator import DDLCreator
 from utils.logger import logger
 import re
 from OracleDDLExecutor import OracleDDLExecutor
+from dotenv import load_dotenv
 
+load_dotenv()
 # Génération du modèle
 exporter = OracleSchemaExporter()
 try:

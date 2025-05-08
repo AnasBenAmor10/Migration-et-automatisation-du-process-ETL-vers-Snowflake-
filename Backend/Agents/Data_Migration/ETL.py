@@ -30,11 +30,10 @@ def Schema_validation(state: State):
     extractor = SnowflakeSchemaExtractor()
     snowflake_schema = extractor.get_schema()
     oracle_schema = state["oracle_schema"]
-    oracle_schema_json = json.dumps(oracle_schema, indent=2)
-    snowflake_schema_json = json.dumps(snowflake_schema, indent=2)
-    result = schema_comparisation(oracle_schema_json, snowflake_schema_json)
-    print(result)
-    return {"comparaison_result": "true", "snowflake_schema": snowflake_schema}
+    # oracle_schema_json = json.dumps(oracle_schema, indent=2)
+    # snowflake_schema_json = json.dumps(snowflake_schema, indent=2)
+    result = schema_comparisation(oracle_schema, snowflake_schema)
+    return {"comparaison_result": result, "snowflake_schema": snowflake_schema}
 
 
 ## Node: Mapping Generation
@@ -140,7 +139,7 @@ def ExecETL(state: State):
 ## Routing
 def route_by_status(state: State) -> Literal["continue", "end"]:
     """Routing logic based on validation result"""
-    if state.get("comparaison_result") == "false":
+    if state.get("comparaison_result") == False:
         return "end"
     else:
         return "continue"

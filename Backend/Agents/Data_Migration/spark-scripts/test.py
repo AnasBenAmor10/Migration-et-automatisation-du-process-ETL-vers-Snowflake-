@@ -58,3 +58,4 @@ transformed_df = transformed_df.withColumn(
     "COMMISSION_PCT", F.col("COMMISSION_PCT").cast(DecimalType(10, 2))
 )
 transformed_df = transformed_df.na.fill(0, subset=["COMMISSION_PCT"])
+transformed_df.select("COMMISSION_PCT").show(n=transformed_df.count(), truncate=False)

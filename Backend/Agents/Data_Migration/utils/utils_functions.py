@@ -9,6 +9,8 @@ from email.message import EmailMessage
 from langchain_groq import ChatGroq
 from langchain.schema import HumanMessage, SystemMessage
 import re
+from collections import defaultdict
+from typing import Dict, Set
 
 # Chargement des variables d'environnement
 load_dotenv()
@@ -18,64 +20,74 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def schema_comparisation(oracle_schema: Dict, snowflake_schema: Dict) -> bool:
+    """
+    Compare Oracle and Snowflake schemas.
+    Returns True if schemas are identical, False otherwise.
+    """
+    snowflake_data = Snowflake_schema_info(snowflake_schema)
+    oracle_data = extract_oracle_schema(oracle_schema)
+    return snowflake_data == oracle_data
+
+
 ## --- Fonction de comparaison
-def schema_comparisation(oracle_schema_json: str, snowflake_schema_json: str) -> str:
-    prompt = f"""
-        STRICTLY respond with ONLY 'true' or 'false' based on this schema comparison:
+# def schema_comparisation(oracle_schema_json: str, snowflake_schema_json: str) -> str:
+#     prompt = f"""
+#         STRICTLY respond with ONLY 'true' or 'false' based on this schema comparison:
 
-        Return 'true' ONLY IF ALL these conditions are met:
-        
-        1. ALL Oracle tables exist in Snowflake (same table, case-insensitive)
-        2. Each table contains ALL original columns (same column names, case-insensitive)
-        3. ALL primary keys are preserved (same columns designated as PK)
-        4. ALL foreign key relationships exist (same source/target columns)
+#         Return 'true' ONLY IF ALL these conditions are met:
 
-        Return 'false' if ANY of these occur:
-        - Any Oracle table is missing in Snowflake
-        - Any column is missing from original tables
-        - Any primary key is missing or different
-        - Any foreign key relationship is missing
+#         1. ALL Oracle tables exist in Snowflake (same table, case-insensitive)
+#         2. Each table contains ALL original columns (same column names, case-insensitive)
+#         3. ALL primary keys are preserved (same columns designated as PK)
+#         4. ALL foreign key relationships exist (same source/target columns)
 
-        EXPLICITLY IGNORE:
-        - Data type differences (VARCHAR2/STRING, NUMBER/INTEGER, etc.)
-        - Column order differences
-        - Additional Snowflake columns/tables not in Oracle
-        - Comments, metadata, or descriptions
-        - Case sensitivity in names
-        - Storage-specific attributes
+#         Return 'false' if ANY of these occur:
+#         - Any Oracle table is missing in Snowflake
+#         - Any column is missing from original tables
+#         - Any primary key is missing or different
+#         - Any foreign key relationship is missing
 
-        Type equivalencies to accept:
-        - VARCHAR2 ↔ STRING ↔ TEXT
-        - NUMBER ↔ INTEGER ↔ FLOAT ↔ DECIMAL
-        - DATE ↔ TIMESTAMP
-        - CHAR ↔ STRING
-        - Any other reasonable type variations
+#         EXPLICITLY IGNORE:
+#         - Data type differences (VARCHAR2/STRING, NUMBER/INTEGER, etc.)
+#         - Column order differences
+#         - Additional Snowflake columns/tables not in Oracle
+#         - Comments, metadata, or descriptions
+#         - Case sensitivity in names
+#         - Storage-specific attributes
 
-        Oracle Schema (Reference):
-        {oracle_schema_json}
+#         Type equivalencies to accept:
+#         - VARCHAR2 ↔ STRING ↔ TEXT
+#         - NUMBER ↔ INTEGER ↔ FLOAT ↔ DECIMAL
+#         - DATE ↔ TIMESTAMP
+#         - CHAR ↔ STRING
+#         - Any other reasonable type variations
 
-        Snowflake Schema (To Compare):
-        {snowflake_schema_json}
+#         Oracle Schema (Reference):
+#         {oracle_schema_json}
 
-        Your response must be EXACTLY 'true' or 'false' with:
-        - NO additional text
-        - NO explanations
-        - NO punctuation
-        - NO JSON formatting
-        - ONLY lowercase true/false
-        """
+#         Snowflake Schema (To Compare):
+#         {snowflake_schema_json}
 
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.0-flash-lite",
-        google_api_key=os.getenv("GEMINI_API_KEY"),
-        temperature=0,
-        max_tokens=None,
-        timeout=None,
-        max_retries=2,
-    )
+#         Your response must be EXACTLY 'true' or 'false' with:
+#         - NO additional text
+#         - NO explanations
+#         - NO punctuation
+#         - NO JSON formatting
+#         - ONLY lowercase true/false
+#         """
 
-    response = llm.invoke(prompt)
-    return response.content
+#     llm = ChatGoogleGenerativeAI(
+#         model="gemini-2.0-flash-lite",
+#         google_api_key=os.getenv("GEMINI_API_KEY"),
+#         temperature=0,
+#         max_tokens=None,
+#         timeout=None,
+#         max_retries=2,
+#     )
+
+#     response = llm.invoke(prompt)
+#     return response.content
 
 
 def mapping_generation(schema_source, schema_target):
@@ -366,3 +378,142 @@ def send_error_email(error_msg: str, analysis: str):
 
     except Exception as e:
         logger.error(f"Échec envoi email: {str(e)}")
+
+
+# def Snowflake_schema_info(data: Dict) -> Dict[str, Dict[str, Set[str]]]:
+#     """
+#     Extract table names, columns, primary keys, and foreign keys from JSON data.
+#     Returns a dictionary with table names as keys and dictionaries with labeled sets
+#     (c: columns, pk: primary_keys, fk: foreign_keys) as values.
+#     """
+#     result = defaultdict(lambda: {"c": set(), "pk": set(), "fk": set()})
+
+#     for table_name, table_info in data.items():
+#         columns = set()
+#         primary_keys = set()
+#         foreign_keys = set()
+
+#         # Extract columns
+#         for col in table_info.get("columns", []):
+#             if isinstance(col, dict) and "name" in col:
+#                 columns.add(col["name"])
+
+#         # Extract primary keys
+#         for pk in table_info.get("primary_keys", []):
+#             primary_keys.add(pk)
+
+#         # Extract foreign keys
+#         for fk in table_info.get("foreign_keys", []):
+#             if isinstance(fk, dict) and "column" in fk:
+#                 foreign_keys.add(fk["column"])
+
+#         result[table_name] = {"c": columns, "pk": primary_keys, "fk": foreign_keys}
+
+#     return dict(result)
+
+
+# def extract_oracle_schema(data: Dict) -> Dict[str, Dict[str, Set[str]]]:
+#     """
+#     Extract table names, columns, primary keys, and foreign keys from Oracle schema JSON data.
+#     Returns a dictionary with table names as keys and dictionaries with labeled sets
+#     (c: columns, pk: primary_keys, fk: foreign_keys) as values.
+#     """
+#     result = defaultdict(lambda: {"c": set(), "pk": set(), "fk": set()})
+
+#     # Access the 'tables' key in the JSON
+#     tables = data.get("tables", {})
+
+#     for table_name, table_info in tables.items():
+#         columns = set()
+#         primary_keys = set()
+#         foreign_keys = set()
+
+#         # Extract columns
+#         for col in table_info.get("columns", []):
+#             if isinstance(col, dict) and "name" in col:
+#                 columns.add(col["name"])
+
+#         # Extract primary keys
+#         pk_info = table_info.get("primary_key", {})
+#         if isinstance(pk_info, dict):
+#             for pk in pk_info.get("columns", []):
+#                 primary_keys.add(pk)
+
+#         # Extract foreign keys
+#         for fk in table_info.get("foreign_keys", []):
+#             if isinstance(fk, dict):
+#                 for fk_col in fk.get("columns", []):
+#                     foreign_keys.add(fk_col)
+
+#         result[table_name] = {"c": columns, "pk": primary_keys, "fk": foreign_keys}
+
+#     return dict(result)
+
+
+def Snowflake_schema_info(snowflake_schema: Dict) -> Dict[str, Dict[str, Set[str]]]:
+    """
+    Extract table names, columns, primary keys, and foreign keys from Snowflake schema dictionary.
+    Returns a dictionary with table names as keys and dictionaries with labeled sets
+    (c: columns, pk: primary_keys, fk: foreign_keys) as values.
+    """
+    result = defaultdict(lambda: {"c": set(), "pk": set(), "fk": set()})
+
+    for table_name, table_info in snowflake_schema.items():
+        columns = set()
+        primary_keys = set()
+        foreign_keys = set()
+
+        # Extract columns
+        for col in table_info.get("columns", []):
+            if isinstance(col, dict) and "name" in col:
+                columns.add(col["name"])
+
+        # Extract primary keys
+        for pk in table_info.get("primary_keys", []):
+            primary_keys.add(pk)
+
+        # Extract foreign keys
+        for fk in table_info.get("foreign_keys", []):
+            if isinstance(fk, dict) and "column" in fk:
+                foreign_keys.add(fk["column"])
+
+        result[table_name] = {"c": columns, "pk": primary_keys, "fk": foreign_keys}
+
+    return dict(result)
+
+
+def extract_oracle_schema(oracle_schema: Dict) -> Dict[str, Dict[str, Set[str]]]:
+    """
+    Extract table names, columns, primary keys, and foreign keys from Oracle schema dictionary.
+    Returns a dictionary with table names as keys and dictionaries with labeled sets
+    (c: columns, pk: primary_keys, fk: foreign_keys) as values.
+    """
+    result = defaultdict(lambda: {"c": set(), "pk": set(), "fk": set()})
+
+    tables = oracle_schema.get("tables", {})
+
+    for table_name, table_info in tables.items():
+        columns = set()
+        primary_keys = set()
+        foreign_keys = set()
+
+        # Extract columns
+        for col in table_info.get("columns", []):
+            if isinstance(col, dict) and "name" in col:
+                columns.add(col["name"])
+
+        # Extract primary keys
+        pk_info = table_info.get("primary_key", {})
+        if isinstance(pk_info, dict):
+            for pk in pk_info.get("columns", []):
+                primary_keys.add(pk)
+
+        # Extract foreign keys
+        for fk in table_info.get("foreign_keys", []):
+            if isinstance(fk, dict):
+                for fk_col in fk.get("columns", []):
+                    foreign_keys.add(fk_col)
+
+        result[table_name] = {"c": columns, "pk": primary_keys, "fk": foreign_keys}
+
+    return dict(result)

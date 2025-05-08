@@ -12,8 +12,8 @@ load_dotenv()
 # ! The object of this code is to extract all from oracle 11g database (Json file contain schema of the database)
 class OracleSchemaExporter:
     def __init__(self):
-        self.user = os.getenv("ORACLE_USER")
-        self.password = os.getenv("ORACLE_PASSWORD")
+        self.user = os.getenv("ORACLE_SOURCE")
+        self.password = os.getenv("ORACLE_SOURCE_PASSWORD")
         self.host = os.getenv("ORACLE_HOST")
         self.port = os.getenv("ORACLE_PORT")
         self.sid = os.getenv("ORACLE_SID")

@@ -1,6 +1,6 @@
 from langchain_core.prompts import PromptTemplate
 
-snowflake_prompt_template = PromptTemplate(
+snowflake_prompt_template1 = PromptTemplate(
     input_variables=["schema_json"],
     template="""
     ### CONTEXT:
@@ -37,7 +37,17 @@ snowflake_prompt_template = PromptTemplate(
     ### IMPORTANT - ABOUT SK and *_ID in Dimensions**:
       - If the original source table contains a column named *_ID, retain it as-is: it is considered a **business key** and remains in the dimension table using its original type (VARCHAR, CHAR, or NUMBER),in addition to this *_ID, add a new `SK_*` column to serve as the **technical surrogate key**, which is an auto-incremental NUMBER.
       - If a table does **not** have a *_ID column, create only the surrogate key `SK_*` and add a comment explaining it is a technical key, but also highlight that a **business key is missing** in this case.
-      
+    ### DATA TYPE HANDLING RULES:
+    - For NUMBER columns, map Oracle precision/scale as follows:
+      - If both precision and scale are provided in the input schema, use `NUMBER(precision, scale)` in the output.
+      - If only precision is provided and scale is null, use `NUMBER(precision)`.
+      - If both are null, use generic `NUMBER`.
+    - For string/VARCHAR types, estimate appropriate lengths based on:
+      - Business context (e.g., country codes = 2-3 chars, names = 50-100 chars)
+      - Original schema's length constraints if available
+    - For date/time fields:
+      - Use `DATE` for calendar dates without time
+      - Use `TIMESTAMP` or `DATETIME` for fields with time components
     ### ADDITIONAL OUTPUT SCHEMA DETAILS
     - the output should contains `indexes` and for each table.
     - Use **unique indexes** to confirm or infer **primary keys**.
@@ -112,12 +122,7 @@ snowflake_prompt_template = PromptTemplate(
           "DAY": "int",
           "MONTH": "int",
           "YEAR": "int",
-          "DAY_NAME": "varchar(10)",
-          "MONTH_NAME": "varchar(10)"
         }},
-        "comments": {{
-          "table": "Date dimension table required by Snowflake modeling rules"
-        }}
       }}
       ]
     }}
@@ -178,6 +183,10 @@ def get_base_ddl_prompt2():
     - Use Oracle data types: VARCHAR2, NUMBER, DATE
     - Include all columns from the schema
     - Add DT_INSERT column to all tables if not present
+    - For NUMBER columns, map Oracle precision/scale as follows:
+      - If both precision and scale are provided, use `NUMBER(precision, scale)`.
+      - If only precision is provided and scale is null, use `NUMBER(precision)`.
+      - If both are null, use generic `NUMBER`.
     - For fact tables:
       * Include all foreign key columns
       * Mark measures with proper data types
@@ -458,7 +467,7 @@ def get_base_ddl_prompt():
 """
 
 
-snowflake_prompt_template1 = PromptTemplate(
+snowflake_prompt_template = PromptTemplate(
     input_variables=["schema_json"],
     template="""
   # SNOWFLAKE SCHEMA DESIGNER PROMPT

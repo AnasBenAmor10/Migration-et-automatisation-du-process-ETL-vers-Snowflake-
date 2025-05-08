@@ -14,6 +14,10 @@ Your task is to generate clean, minimal, and Snowflake-compatible base DDL state
 - Define only the columns and the contraints present in the JSON schema.
 - Do NOT include constraints other than the surrogate primary key.
 - Use Snowflake-compatible data types (e.g., NUMBER, VARCHAR, BOOLEAN, TIMESTAMP).
+- For NUMBER columns, map Oracle precision/scale as follows:
+  - If both precision and scale are provided, use `NUMBER(precision, scale)`.
+  - If only precision is provided and scale is null, use `NUMBER(precision)`.
+  - If both are null, use generic `NUMBER`.
 - Use UPPERCASE for SQL keywords and snake_case for identifiers.
 - Match names exactly from the JSON schema.
 
