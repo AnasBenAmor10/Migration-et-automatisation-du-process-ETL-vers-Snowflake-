@@ -1,6 +1,6 @@
 {
   "schema_name": "HR",
-  "extraction_date": "2025-05-08T14:29:25.367953",
+  "extraction_date": "2025-05-08T16:36:41.255796",
   "tables": {
     "COUNTRIES": {
       "tablespace": null,

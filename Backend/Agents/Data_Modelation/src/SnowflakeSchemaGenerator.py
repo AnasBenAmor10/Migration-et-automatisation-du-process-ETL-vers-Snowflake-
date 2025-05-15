@@ -1,7 +1,7 @@
-from utils.Prompt import snowflake_prompt_template1
+from Agents.Data_Modelation.src.utils.Prompt import snowflake_prompt_template1
 import json
 from langchain_google_genai import ChatGoogleGenerativeAI
-from utils.Config import GEMINI_API_KEY
+from Agents.Data_Modelation.src.utils.Config import GEMINI_API_KEY
 import re
 
 

@@ -2,7 +2,7 @@ import cx_Oracle
 import os
 import re
 from typing import List
-from utils.logger import logger
+from Agents.Data_Modelation.src.utils.logger import logger
 
 
 class OracleDDLExecutor:

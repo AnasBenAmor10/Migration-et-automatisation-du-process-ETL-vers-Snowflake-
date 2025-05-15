@@ -30,66 +30,6 @@ def schema_comparisation(oracle_schema: Dict, snowflake_schema: Dict) -> bool:
     return snowflake_data == oracle_data
 
 
-## --- Fonction de comparaison
-# def schema_comparisation(oracle_schema_json: str, snowflake_schema_json: str) -> str:
-#     prompt = f"""
-#         STRICTLY respond with ONLY 'true' or 'false' based on this schema comparison:
-
-#         Return 'true' ONLY IF ALL these conditions are met:
-
-#         1. ALL Oracle tables exist in Snowflake (same table, case-insensitive)
-#         2. Each table contains ALL original columns (same column names, case-insensitive)
-#         3. ALL primary keys are preserved (same columns designated as PK)
-#         4. ALL foreign key relationships exist (same source/target columns)
-
-#         Return 'false' if ANY of these occur:
-#         - Any Oracle table is missing in Snowflake
-#         - Any column is missing from original tables
-#         - Any primary key is missing or different
-#         - Any foreign key relationship is missing
-
-#         EXPLICITLY IGNORE:
-#         - Data type differences (VARCHAR2/STRING, NUMBER/INTEGER, etc.)
-#         - Column order differences
-#         - Additional Snowflake columns/tables not in Oracle
-#         - Comments, metadata, or descriptions
-#         - Case sensitivity in names
-#         - Storage-specific attributes
-
-#         Type equivalencies to accept:
-#         - VARCHAR2 ↔ STRING ↔ TEXT
-#         - NUMBER ↔ INTEGER ↔ FLOAT ↔ DECIMAL
-#         - DATE ↔ TIMESTAMP
-#         - CHAR ↔ STRING
-#         - Any other reasonable type variations
-
-#         Oracle Schema (Reference):
-#         {oracle_schema_json}
-
-#         Snowflake Schema (To Compare):
-#         {snowflake_schema_json}
-
-#         Your response must be EXACTLY 'true' or 'false' with:
-#         - NO additional text
-#         - NO explanations
-#         - NO punctuation
-#         - NO JSON formatting
-#         - ONLY lowercase true/false
-#         """
-
-#     llm = ChatGoogleGenerativeAI(
-#         model="gemini-2.0-flash-lite",
-#         google_api_key=os.getenv("GEMINI_API_KEY"),
-#         temperature=0,
-#         max_tokens=None,
-#         timeout=None,
-#         max_retries=2,
-#     )
-
-#     response = llm.invoke(prompt)
-#     return response.content
-
-
 def mapping_generation(schema_source, schema_target):
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.0-flash-lite",
@@ -478,7 +418,7 @@ def Snowflake_schema_info(snowflake_schema: Dict) -> Dict[str, Dict[str, Set[str
                 foreign_keys.add(fk["column"])
 
         result[table_name] = {"c": columns, "pk": primary_keys, "fk": foreign_keys}
-
+    print(dict(result))
     return dict(result)
 
 
@@ -515,5 +455,5 @@ def extract_oracle_schema(oracle_schema: Dict) -> Dict[str, Dict[str, Set[str]]]
                     foreign_keys.add(fk_col)
 
         result[table_name] = {"c": columns, "pk": primary_keys, "fk": foreign_keys}
-
+    print(dict(result))
     return dict(result)

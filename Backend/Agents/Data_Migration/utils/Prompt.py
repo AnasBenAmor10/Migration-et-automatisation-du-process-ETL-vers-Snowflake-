@@ -49,7 +49,7 @@ Your goal is to create a complete and optimized DDL script for Snowflake from JS
 - Use tools in sequence. Do not skip or combine steps.
 - Always maintain this output structure in the final DDL:
     a. All CREATE TABLE statements first Only  
-    b. Then all ALTER TABLE statements for constraints  
+    b. Then all ALTER TABLE statements for constraints in this order (NOT NULL , UNIQUE , FOREIGN KEY , CHECK) 
     c. Then any clustering or indexes  
     d. Then COMMENT ON statements
 
@@ -204,6 +204,7 @@ Mapping Rules:
 
 2. For date dimensions:
    - Extract dates from source date fields (don't generate)
+   - Not use History table like JOB_HISTORY table
    - Example: HIRE_DATE → DATE_VALUE with derived day/month/year
 
 3. For fact tables:
@@ -216,20 +217,23 @@ Output Format per Target Table:
 2. Source Tables: [sources]
 3. Natural Keys: [join keys]
 4. Column Mapping:
-   - [Target] ← [Source] ([Transform])
-   - [Derived] ← [Logic]
+- [Target] ← [Source] ([Transform])
+- [Derived] ← [Logic]
 5. Special Notes:
-   - [Data Quality]
-   - [Constraints ] For both Foreign key and Unique
-   - [Date Handling]
+- [Data Quality]
+- [Constraints ] For both Foreign key and Unique
+- [Date Handling]
 
 Key Requirements:
-- Never use hardcoded dates
+- Never use hardcoded dates and History table like JOB_HISTORY !!!
 - For date dimensions: map from existing date fields
 - Skip DT_INSERT field
 - Include all necessary joins
-- ! NOT use History table like Job_History
 - Returned sorted mapping by importance (based on dependency). 
+## PROHIBITED:
+  - Explanations or commentary
+  - Deviation from Output Format
+  - Omission of required fields
 ##  RESPONSE
 """,
 )

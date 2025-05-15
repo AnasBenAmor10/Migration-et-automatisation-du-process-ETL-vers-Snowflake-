@@ -6,8 +6,8 @@ from langchain.agents.output_parsers import ReActSingleInputOutputParser
 from langchain.tools.render import render_text_description
 import json
 import sqlparse
-from utils.Config import GEMINI_API_KEY
-from utils.Prompt import *
+from Agents.Data_Modelation.src.utils.Config import GEMINI_API_KEY
+from Agents.Data_Modelation.src.utils.Prompt import *
 
 class DDLCreator:
     def __init__(self, formatted_json):

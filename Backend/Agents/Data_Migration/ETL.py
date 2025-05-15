@@ -33,6 +33,7 @@ def Schema_validation(state: State):
     # oracle_schema_json = json.dumps(oracle_schema, indent=2)
     # snowflake_schema_json = json.dumps(snowflake_schema, indent=2)
     result = schema_comparisation(oracle_schema, snowflake_schema)
+    # print(result)
     return {"comparaison_result": result, "snowflake_schema": snowflake_schema}
 
 
@@ -42,7 +43,7 @@ def Generate_Mapping(state: State):
         HR_Schema = json.load(f)
     response = mapping_generation(HR_Schema, state["snowflake_schema"])
     Dictionary = formulated_mapping(response)
-    print(response)
+    # print(response)
     return {"mapping": response, "Dict_mapping": Dictionary}
 
 
@@ -50,7 +51,7 @@ def Generate_Mapping(state: State):
 def select_table(state: State):
     mapping = state["mapping"]
     processed_tables = set(state["spark_code"].keys() if state["spark_code"] else [])
-    print(processed_tables)
+    # print(processed_tables)
     # Trouver la première table non traitée (ordre de dépendance important)
     for table_name in get_processing_order(mapping):
         if table_name not in processed_tables:
@@ -102,7 +103,7 @@ def WriteSparkCode(state: State):
             f.write(code)
             f.write("\n\n")
 
-    print(f"Tous les codes Spark ont été écrits dans {output_file}")
+    # print(f"Tous les codes Spark ont été écrits dans {output_file}")
     return {"status": f"Fichier {output_file} généré avec succès"}
 
 

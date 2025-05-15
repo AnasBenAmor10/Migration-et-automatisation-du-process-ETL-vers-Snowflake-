@@ -3,7 +3,7 @@ from datetime import datetime
 import cx_Oracle
 import os
 from dotenv import load_dotenv
-from utils.logger import logger
+from Agents.Data_Modelation.src.utils.logger import logger
 
 # Charger les variables d'environnement
 load_dotenv()
